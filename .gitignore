@@ -1,0 +1,6 @@
+/data/
+.DS_Store
+.vscode/
+.git/
+__pycache__/
+cnn_classifier.pth
