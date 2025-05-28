@@ -2,31 +2,25 @@ import os
 import numpy as np
 import torch
 from torch.utils.data import Dataset
+from augmentation import apply_spec_augment
 
 
 class MelSpectrogramDataset(Dataset):
-    def __init__(self, data_dir, classes, transform=None):
-        """
-        Args:
-            data_dir (str): Path to processed data directory
-            classes (list): List of instrument class names (str)
-            transform (callable, optional): Optional transform to be applied on a sample
-        """
+    def __init__(self, data_dir, classes, training=True, sample_list=None):
         self.data_dir = data_dir
         self.classes = classes
-        self.class_to_idx = {cls: i for i, cls in enumerate(classes)}
-        self.transform = transform
-        self.samples = self._gather_samples()
-
-    def _gather_samples(self):
-        samples = []
-        for cls in self.classes:
-            cls_dir = os.path.join(self.data_dir, cls)
-            for fname in os.listdir(cls_dir):
-                if fname.endswith(".npy"):
-                    path = os.path.join(cls_dir, fname)
-                    samples.append((path, self.class_to_idx[cls]))
-        return samples
+        self.training = training
+        if sample_list is not None:
+            self.samples = sample_list
+        else:
+            self.samples = []
+            for label, cls in enumerate(classes):
+                cls_dir = os.path.join(data_dir, cls)
+                if not os.path.isdir(cls_dir):
+                    continue
+                for fname in os.listdir(cls_dir):
+                    if fname.endswith(".npy"):
+                        self.samples.append((os.path.join(cls_dir, fname), label))
 
     def __len__(self):
         return len(self.samples)
@@ -34,11 +28,7 @@ class MelSpectrogramDataset(Dataset):
     def __getitem__(self, idx):
         path, label = self.samples[idx]
         mel = np.load(path)
-        mel = np.expand_dims(mel, axis=0)  # Add channel dimension: [1, H, W]
-        mel = torch.tensor(mel, dtype=torch.float32)
-        label = torch.tensor(label, dtype=torch.long)
-
-        if self.transform:
-            mel = self.transform(mel)
-
-        return mel, label
+        if self.training:
+            mel = apply_spec_augment(mel)
+        mel_tensor = torch.tensor(mel, dtype=torch.float32).unsqueeze(0)  # [1, H, W]
+        return mel_tensor, label

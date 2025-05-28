@@ -1,4 +1,4 @@
-MODEL_PATH = "cnn_classifier.pth"
+MODEL_PATH = "deep_cnn_classifier.pth"
 SOURCE_DIR = "data/raw"
 OUTPUT_DIR = "data/processed"
 SAMPLE_RATE = 16000
@@ -12,7 +12,6 @@ CLASSES = [
     "trumpet",
     "oboe",
     "sax",
-    "trumpet",
     "cello",
     "flute",
     "violin",
