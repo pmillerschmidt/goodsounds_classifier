@@ -82,7 +82,7 @@ def classify_instrument(audio_path):
     return confidences, fig
 
 
-# Gradio UI layout with inputs on the left and plot on the right
+# Gradio UI layout
 with gr.Blocks() as app:
     gr.Markdown(
         """## Instrument Classifier

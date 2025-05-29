@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
 from dataset import MelSpectrogramDataset
-from model import CNNMel
+from model import CNNClassifier
 from cfg import CLASSES
 
 
@@ -68,7 +68,7 @@ def main():
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_ds, batch_size=batch_size)
     # Model
-    model = CNNMel(num_classes=len(CLASSES)).to(device)
+    model = CNNClassifier(num_classes=len(CLASSES)).to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="min", factor=0.5, patience=2, verbose=True

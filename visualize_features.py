@@ -8,10 +8,9 @@ import umap.umap_ as umap
 from torch.utils.data import DataLoader
 from dataset import MelSpectrogramDataset
 from model import CNNClassifier
-from cfg import CLASSES, MODEL_PATH
+from cfg import CLASSES, MODEL_PATH, OUTPUT_DIR
 
 # Config
-DATA_DIR = "data/processed"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MAX_SAMPLES = 5000
 REDUCTION_METHOD = "pca"
@@ -33,7 +32,7 @@ def hook_fn(module, input, output):
 handle = model.classifier[0].register_forward_hook(hook_fn)
 
 # Load data
-dataset = MelSpectrogramDataset(data_dir=DATA_DIR, classes=CLASSES, training=False)
+dataset = MelSpectrogramDataset(data_dir=OUTPUT_DIR, classes=CLASSES, training=False)
 sample_indices = np.random.choice(
     len(dataset), size=min(MAX_SAMPLES, len(dataset)), replace=False
 )
